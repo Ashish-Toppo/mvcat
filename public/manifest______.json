@@ -1,0 +1,24 @@
+{
+    "name": "ADBU Events Hub",
+    "short_name": "EventsHub",
+    "description": "Discover and participate in exciting events at Assam Don Bosco University.",
+    "start_url": "/event/",
+    "scope": "/event/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4f46e5",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "/event/assets/icons/logo192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/event/assets/icons/logo512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

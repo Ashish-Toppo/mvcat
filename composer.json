@@ -1,0 +1,7 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.4",
+        "ezyang/htmlpurifier": "^4.19",
+        "phpmailer/phpmailer": "^7.1"
+    }
+}

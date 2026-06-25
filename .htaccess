@@ -1,0 +1,27 @@
+# Don't Allow CORS for all domains (you can restrict this to specific domains if needed)
+# <IfModule mod_headers.c>
+#     Header set Access-Control-Allow-Origin "*"
+#     Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+#     Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+# </IfModule>
+
+# Deny access to .env and all hidden files (.git, .ht*, etc.)
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# explicitly block .env
+<Files .env>
+    Require all denied
+</Files>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect to /public without exposing it in the browser
+    RewriteRule ^$ public/ [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
