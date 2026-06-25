@@ -1,12 +1,12 @@
 # Views
 
-Views handle the HTML representation of your application. They are stored in the `app/views/` directory.
+Views handle the HTML representation of your application. They are stored in the `app/Views/` directory.
 
 ## Creating a View
 
 A view is simply a PHP file that outputs HTML. 
 
-Example `app/views/home.php`:
+Example `app/Views/home.php`:
 ```php
 <!DOCTYPE html>
 <html>
@@ -35,4 +35,4 @@ $this->view('home', $data);
 ```
 
 ## View Caching
-MVCAT comes with a built-in template caching system. When a view is loaded, it is rendered and saved to the `app/cache/` directory. This makes subsequent renders faster.
+MVCAT comes with a built-in template caching system. When a view is loaded using the custom `@template` tags, it is rendered and saved to the cache directory to make subsequent renders faster.

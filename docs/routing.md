@@ -1,33 +1,49 @@
 # Routing
 
-Routing in MVCAT maps URLs to specific controllers or closures. All routes are defined in `app/setup/routes.php`.
+Routing in MVCAT maps URLs to specific controllers or closures. Routes are automatically loaded from any `.php` file inside the `app/Routes/` directory.
+
+The Router is accessible via the `$app->getRouter()` or directly in the route files using the scoped `$app` variable.
 
 ## Defining Routes
 
-The router supports `GET` and `POST` methods via the `$routes->get()` and `$routes->post()` methods.
+The router supports `GET`, `POST`, and `DELETE` methods.
 
 ### Controller Routing
-You can route a URL directly to a Controller's method by passing an array `['controller_name', 'method_name']`.
+Route a URL directly to a Controller's method. Note that you must provide the class name as a string or use `::class`. MVCAT's Dependency Injection Container will automatically instantiate the controller and resolve its dependencies.
 
 ```php
-// Route to the 'home' method of the 'view' controller
-$routes->get('/', ['view', 'home'], '');
+use App\Controllers\HomeController;
+
+// In app/Routes/web.php
+$router = $app->getRouter();
+
+$router->get('/', [HomeController::class, 'index']);
 ```
 
-### Closure Routing
-You can use an anonymous function (closure) for simple logic directly in the route file. The closure takes a `$controller` object which gives you access to the base controller methods.
+### Route Parameters
+You can capture segments of the URI using `{}`. These parameters are injected into the Request object and passed directly to your controller method.
 
 ```php
-$routes->get('/about', function($controller) {
-    $controller->view('about');
+$router->get('/user/{id}', [UserController::class, 'show']);
+```
+In your controller:
+```php
+public function show($request, $response, $id) {
+    echo "User ID: " . $id;
+}
+```
+
+### Route Groups & Middleware
+You can group routes to share prefixes and middlewares.
+
+```php
+$router->group('/api', ['AuthMiddleware'], function($router) {
+    
+    // This route responds to /api/users
+    $router->get('/users', [ApiController::class, 'users']);
+    
 });
 ```
 
-## Route Not Found (404)
-You can define a custom "404 Not Found" handler in `routes.php`:
-
-```php
-$routes->routeNotFound(function () {
-    echo "<h1>404 - Page Not Found</h1>";
-});
-```
+### Route Not Found (404)
+If no route matches the URI, the framework automatically returns a 404 response.

@@ -1,23 +1,51 @@
 # Controllers
 
-Controllers contain the logic of your application. They tie together models and views.
-Controllers are stored in the `app/controllers/` directory and should extend the base `Controller` class.
+Controllers contain the logic of your application. They are stored in the `app/Controllers/` directory, utilize PSR-4 namespaces, and should extend the base `Core\Classes\Controller` class.
 
 ## Creating a Controller
 
-Here is an example of a simple controller `app/controllers/view.php`:
+Here is an example of a modern controller `app/Controllers/HomeController.php`:
 
 ```php
 <?php
 
-class view extends Controller {
+namespace App\Controllers;
 
-    public function home($data = []) {
-        // Prepare data
-        $info = ['information' => 'Hello World!'];
+use Core\Classes\Controller;
+use App\Models\User;
 
-        // Load a view and pass data
-        $this->view('home', $info);
+class HomeController extends Controller {
+
+    public function index($request, $response, $id = null) {
+        // Use the new Active Record Model
+        $users = User::all();
+
+        // Pass data to the view
+        $this->view('home', ['users' => $users]);
+    }
+}
+```
+
+## Dependency Injection
+
+MVCAT now features a robust Dependency Injection Container. Any dependencies type-hinted in your controller constructor will be automatically resolved and injected by the framework!
+
+```php
+<?php
+
+namespace App\Controllers;
+
+use Core\Classes\Controller;
+use App\Services\CustomService;
+
+class DashboardController extends Controller {
+
+    protected CustomService $service;
+
+    // CustomService is automatically injected!
+    public function __construct(CustomService $service) {
+        parent::__construct();
+        $this->service = $service;
     }
 }
 ```
@@ -26,12 +54,7 @@ class view extends Controller {
 
 By extending the `Controller` class, you have access to several useful methods:
 
-- **`$this->view($viewName, $data = [])`**: Loads a view file from `app/views/` and extracts `$data` array to be used as variables in the view.
-- **`$this->model($modelName)`**: Loads and returns an instance of a model from `app/models/`.
-- **`$this->controller($controllerName)`**: Loads and returns an instance of another controller.
-- **`$this->input($inputName)`**: Safely retrieves `$_POST` or `$_GET` input via stripping tags and trimming.
-- **Session Methods**: 
-  - `$this->setSession($name, $value)`
-  - `$this->getSession($name)`
-  - `$this->unsetSession($name)`
-  - `$this->destroy()`
+- **`$this->view(string $viewName, array $data = [])`**: Renders a view.
+- **`$this->redirect(string $url)`**: Redirects the user to a new URL.
+- **`$this->input(?string $key = null, mixed $default = null)`**: Safely retrieves request input (`$_GET` or `$_POST`).
+- **`$this->validate(array $rules)`**: Validates request data against the provided rules.

@@ -1,48 +1,93 @@
-# Models
+# Models (Active Record)
 
-Models handle the interaction with your database. They are stored in the `app/models/` directory and should extend the base `Model` class.
+MVCAT features a powerful Eloquent-style Active Record ORM. Models handle the interaction with your database and provide an expressive query builder. They are stored in the `app/Models/` directory and should extend `Core\Classes\Model`.
 
 ## Creating a Model
 
-A model generally maps to a single database table. You must define the `$table` and `$primary` properties.
+Define the `$table` property, and optionally `$fillable` or `$hidden` arrays.
 
-Example `app/models/user.php`:
+Example `app/Models/User.php`:
 ```php
 <?php
 
-class user extends Model {
-    public $table = 'users';
-    public $primary = 'id';
+namespace App\Models;
+
+use Core\Classes\Model;
+
+class User extends Model {
+    public static string $table = 'users';
+
+    // Mass assignable fields
+    protected array $fillable = ['name', 'email', 'password'];
+
+    // Fields to hide when converting model to Array or JSON
+    protected array $hidden = ['password'];
 }
 ```
 
-## Using the Model
+## Basic Usage
 
-You can load a model inside a controller using `$this->model('model_name')`.
-
+### Fetching Data
 ```php
-class myController extends Controller {
-    public function index() {
-        $userModel = $this->model('user');
-        
-        // Fetch all users
-        $allUsers = $userModel->fetchall();
-        
-        // Custom Queries using PDO prepared statements
-        $activeUsers = $userModel->query("SELECT * FROM users WHERE status = ?", ['active']);
-    }
-}
+use App\Models\User;
+
+// Get all users
+$allUsers = User::all();
+
+// Find user by ID
+$user = User::find(1);
+
+// Query Builder
+$activeUsers = User::query()
+                ->where('status', '=', 'active')
+                ->orderBy('created_at', 'DESC')
+                ->limit(10)
+                ->get();
 ```
 
-## Built-in Model Methods
-
-- **`fetchall()`**: Returns all records from the model's table.
-- **`query($sql, $params = [])`**: Executes a raw SQL query. It uses PDO prepared statements if `$params` are provided.
-- **`insert($data_array)`**: Inserts a new record into the table using an associative array of columns and values.
-
+### Inserting and Updating
 ```php
-$userModel->insert([
-    'username' => 'john_doe',
+// Create a new user (requires fields in $fillable)
+$user = new User([
+    'name' => 'John Doe',
     'email' => 'john@example.com'
 ]);
+$user->save();
+
+// Update an existing user
+$user = User::find(1);
+$user->name = 'Jane Doe';
+$user->save();
+```
+
+## Relationships
+
+MVCAT's ORM supports relationships like `HasMany` and `BelongsTo`.
+
+```php
+// In app/Models/User.php
+public function posts() {
+    // A User has many Posts
+    return $this->hasMany(Post::class, 'user_id', 'id');
+}
+
+// In app/Models/Post.php
+public function user() {
+    // A Post belongs to a User
+    return $this->belongsTo(User::class, 'user_id', 'id');
+}
+```
+
+You can now access relationships dynamically, or use Eager Loading to prevent N+1 query problems!
+
+```php
+// Eager load posts for all users!
+$users = User::with('posts')->get();
+
+foreach($users as $user) {
+    echo $user->name;
+    foreach($user->posts as $post) {
+        echo $post->title;
+    }
+}
 ```

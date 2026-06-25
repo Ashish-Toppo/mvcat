@@ -1,27 +1,37 @@
 # Getting Started
 
-Welcome to the **MVCAT** framework! 
+Welcome to the modernized **MVCAT** framework! 
 
 ## Directory Structure
-Here's a quick overview of the directory structure:
-- **`app/`**: This is where you will do most of your work. It contains your `controllers`, `models`, `views`, and `routes.php`.
-- **`config/`**: Contains `config.php` for setting database credentials and environment modes (`dev` or `prod`).
+Here's a quick overview of the new directory structure:
+- **`app/`**: This is where your application logic lives. It contains `Controllers/`, `Models/`, `Middlewares/`, `Providers/`, `Routes/`, and `Views/`.
+- **`core/`**: Core framework files (the Engine). You generally don't need to touch these files.
+- **`config/`**: Contains configuration files like `events.php` and `providers.php`.
 - **`public/`**: The document root of your application. Contains `index.php` and `.htaccess`. All web requests should point here.
-- **`system/`**: Core framework files. You generally don't need to touch these files.
+- **`modules/`**: Directory for modular features.
+- **`vendor/`**: Composer dependencies.
 
-## Configuration
-Before running the application, set up your configuration in `config/config.php`:
+## Installation & Configuration
 
-```php
-// App Mode: 'dev' or 'prod'
-define("MODE", "dev");
+1. **Install Dependencies:**
+   Run the following command in the root of your project:
+   ```bash
+   composer install
+   ```
 
-// Database Configurations
-define("HOST", "localhost");
-define("USER", "root");
-define("DATABASE", "my_database");
-define("PASSWORD", "my_password");
-```
+2. **Environment Variables:**
+   MVCAT uses a `.env` file for configuration. Copy the `.env.example` file in the root directory to `.env` and configure your settings:
+   ```env
+   # DATABASE
+   APP_ENV=local # local / prod
+   DB_HOST=localhost
+   DB_NAME=mvcat_db
+   DB_USER=root
+   DB_PASS=
+
+   # APP
+   APP_BASE = /mvcat #leave as / if hosting at root (no trailing slash allowed)
+   ```
 
 ## Running the Application
 Since the entry point is in the `public/` directory, configure your local web server (like Apache, Nginx, or PHP's built-in server) to point its document root to the `public/` folder.
